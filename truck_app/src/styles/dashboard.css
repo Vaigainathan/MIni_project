@@ -301,3 +301,97 @@
     padding: 8px;
   }
 }
+
+/* Ensure the Google Map container fills its parent column fully */
+.col-md-8 > div {
+  height: 450px;        /* fixed height for the map container */
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+/* Responsive tweak: smaller height on small screens */
+@media (max-width: 768px) {
+  .col-md-8 > div {
+    height: 300px;
+  }
+}
+.dashboard-row {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Truck cards container: horizontal scroll on small screens */
+.truck-cards-container {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  overflow-x: auto;
+  max-width: 400px; /* Adjust width */
+  flex-shrink: 0;
+}
+
+/* Individual truck card fixed width */
+.truck-card {
+  flex: 0 0 250px;
+  max-width: 250px;
+}
+
+/* Map container */
+.map-container {
+  flex: 1;
+  min-width: 300px;
+}
+
+/* Responsive: stack vertically on narrow screens */
+@media (max-width: 768px) {
+  .dashboard-row {
+    flex-direction: column;
+  }
+  .truck-cards-container {
+    max-width: 100%;
+    overflow-x: visible;
+  }
+  .truck-card {
+    max-width: 100%;
+    flex: 1 1 auto;
+  }
+  .map-container {
+    min-width: auto;
+    height: 300px; /* ensure map height remains consistent */
+  }
+}
+
+/* Truck Cards in one horizontal row (responsive block) */
+.truck-fleet-section {
+  margin-bottom: 2rem;
+}
+
+.truck-cards-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.truck-cards-row .truck-card {
+  flex: 1 1 250px; /* Minimum width per card */
+  max-width: 300px;
+}
+
+/* Map below the fleet row */
+.map-section {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Fix */
+@media (max-width: 768px) {
+  .truck-cards-row {
+    flex-direction: column;
+  }
+}
+
