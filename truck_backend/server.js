@@ -1,4 +1,4 @@
-// truck_backend/server.js
+// truck_backend/server.js - Modified to meet specific parameters
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
@@ -18,27 +18,28 @@ app.use(express.json());
 
 // Truck fleet data
 const TRUCKS = [
-  { id: 1, make: 'Volvo', model: 'FH16', registration: 'DL01TC1234', fuelCapacity: 300 },
-  { id: 2, make: 'Mercedes-Benz', model: 'Actros', registration: 'MH02AB5678', fuelCapacity: 400 },
-  { id: 3, make: 'Scania', model: 'R Series', registration: 'KA03CD9876', fuelCapacity: 350 },
-  { id: 4, make: 'Tata', model: 'Prima', registration: 'TN04EF3456', fuelCapacity: 250 },
-  { id: 5, make: 'Ashok Leyland', model: 'Captain', registration: 'GJ05GH7890', fuelCapacity: 280 }
+  { id: 0, make: 'Volvo', model: 'FH16', registration: 'DL01TC1234', fuelCapacity: 300 },
+  { id: 1, make: 'Mercedes-Benz', model: 'Actros', registration: 'MH02AB5678', fuelCapacity: 400 },
+  { id: 2, make: 'Scania', model: 'R Series', registration: 'KA03CD9876', fuelCapacity: 350 },
+  { id: 3, make: 'Tata', model: 'Prima', registration: 'TN04EF3456', fuelCapacity: 250 },
+  { id: 4, make: 'Ashok Leyland', model: 'Captain', registration: 'GJ05GH7890', fuelCapacity: 280 }
 ];
 
+// Fixed driver names with profile indicators
 const DRIVERS = [
-  { id: 1, name: 'Rajesh Kumar', license: 'DL1234567', experience: 12, phone: '+91-9876543210' },
-  { id: 2, name: 'Amit Singh', license: 'MH7654321', experience: 8, phone: '+91-9876543211' },
-  { id: 3, name: 'Suresh Patil', license: 'KA2468135', experience: 15, phone: '+91-9876543212' },
-  { id: 4, name: 'Mohammed Ali', license: 'TN1357924', experience: 10, phone: '+91-9876543213' },
-  { id: 5, name: 'Deepak Sharma', license: 'GJ3692581', experience: 7, phone: '+91-9876543214' }
+  { id: 0, name: 'Rajesh Kumar (Bad Driver)', license: 'DL1234567', experience: 5, phone: '+91-9876543210', profile: 'Bad' },
+  { id: 1, name: 'Amit Singh (Good Driver)', license: 'MH7654321', experience: 15, phone: '+91-9876543211', profile: 'Good' },
+  { id: 2, name: 'Suresh Patil (Avg Driver)', license: 'KA2468135', experience: 10, phone: '+91-9876543212', profile: 'Average' },
+  { id: 3, name: 'Mohammed Ali (Avg Driver)', license: 'TN1357924', experience: 8, phone: '+91-9876543213', profile: 'Average' },
+  { id: 4, name: 'Deepak Sharma (Avg Driver)', license: 'GJ3692581', experience: 7, phone: '+91-9876543214', profile: 'Average' }
 ];
 
 const HELPERS = [
-  { id: 1, name: 'Ravi Verma', phone: '+91-8765432100' },
-  { id: 2, name: 'Sanjay Yadav', phone: '+91-8765432101' },
-  { id: 3, name: 'Pramod Gupta', phone: '+91-8765432102' },
-  { id: 4, name: null }, // No helper
-  { id: 5, name: 'Vikram Singh', phone: '+91-8765432103' }
+  { id: 0, name: 'Ravi Verma', phone: '+91-8765432100' },
+  { id: 1, name: 'Sanjay Yadav', phone: '+91-8765432101' },
+  { id: 2, name: 'Pramod Gupta', phone: '+91-8765432102' },
+  { id: 3, name: null }, // No helper
+  { id: 4, name: 'Vikram Singh', phone: '+91-8765432103' }
 ];
 
 const GOODS_CATALOG = [
@@ -49,15 +50,33 @@ const GOODS_CATALOG = [
   { type: 'Pharmaceuticals', baseWeight: 300, pricePerKg: 500 }
 ];
 
-const CITIES = ['Delhi', 'Mumbai', 'Bangalore', 'Chennai', 'Kolkata', 'Pune', 'Hyderabad'];
+// Fixed routes as specified
+const FIXED_ROUTES = [
+  { origin: 'Pune', destination: 'Delhi', distance: 1400 },
+  { origin: 'Bangalore', destination: 'Delhi', distance: 2100 },
+  { origin: 'Mumbai', destination: 'Pune', distance: 150 },
+  { origin: 'Hyderabad', destination: 'Mumbai', distance: 700 },
+  { origin: 'Kolkata', destination: 'Delhi', distance: 1500 }
+];
+
+// City coordinates for position simulation
+const CITY_COORDINATES = {
+  'Delhi': { lat: 28.6139, lng: 77.2090 },
+  'Mumbai': { lat: 19.0760, lng: 72.8777 },
+  'Bangalore': { lat: 12.9716, lng: 77.5946 },
+  'Chennai': { lat: 13.0827, lng: 80.2707 },
+  'Kolkata': { lat: 22.5726, lng: 88.3639 },
+  'Pune': { lat: 18.5204, lng: 73.8567 },
+  'Hyderabad': { lat: 17.6850, lng: 78.6416 }
+};
 
 // Vehicle simulation class
 class VehicleSimulator {
   constructor(vehicleId) {
     this.vehicleId = vehicleId;
-    this.truck = TRUCKS[vehicleId % TRUCKS.length];
-    this.driver = DRIVERS[vehicleId % DRIVERS.length];
-    this.helper = HELPERS[vehicleId % HELPERS.length];
+    this.truck = TRUCKS[vehicleId];
+    this.driver = DRIVERS[vehicleId];
+    this.helper = HELPERS[vehicleId];
     
     // Initialize goods
     const goodsType = GOODS_CATALOG[vehicleId % GOODS_CATALOG.length];
@@ -69,47 +88,103 @@ class VehicleSimulator {
     };
     this.goods.value = this.goods.weight * goodsType.pricePerKg;
     
-    // Initialize route
-    this.origin = CITIES[Math.floor(Math.random() * CITIES.length)];
-    this.destination = CITIES[Math.floor(Math.random() * CITIES.length)];
-    while (this.destination === this.origin) {
-      this.destination = CITIES[Math.floor(Math.random() * CITIES.length)];
+    // Fixed route based on truck ID
+    this.route = FIXED_ROUTES[vehicleId];
+    
+    // Initialize position at origin
+    const originCoords = CITY_COORDINATES[this.route.origin];
+    const destCoords = CITY_COORDINATES[this.route.destination];
+    
+    // Set initial progress based on truck ID
+    let initialProgress;
+    if (vehicleId === 0) {
+      initialProgress = 70;
+    } else if (vehicleId === 1) {
+      initialProgress = 50;
+    } else {
+      initialProgress = Math.floor(Math.random() * 35);
     }
     
-    // Initialize position
+    // Calculate initial position based on progress
+    const progressRatio = initialProgress / 100;
     this.position = {
-      lat: 28.6139 + (Math.random() - 0.5) * 20,
-      lng: 77.2090 + (Math.random() - 0.5) * 20
+      lat: originCoords.lat + (destCoords.lat - originCoords.lat) * progressRatio,
+      lng: originCoords.lng + (destCoords.lng - originCoords.lng) * progressRatio
     };
     
-    // Initialize vehicle status
-    this.status = 'On Route';
-    this.speed = Math.floor(Math.random() * 20) + 50; // 50-70 km/h
-    this.fuel = Math.floor(Math.random() * 50) + 50; // 50-100%
+    // Initialize vehicle metrics based on driver profile
+    if (vehicleId === 0) {
+      // Bad driver metrics
+      this.status = 'On Route';
+      this.speed = 85 + Math.random() * 10; // High speed (85-95 km/h)
+      this.fuel = 15 + Math.random() * 10; // Low fuel (15-25%)
+      this.engineTemp = 95 + Math.random() * 5; // High temp (95-100°C)
+    } else if (vehicleId === 1) {
+      // Good driver metrics
+      this.status = 'On Route';
+      this.speed = 58 + Math.random() * 4; // Moderate speed (58-62 km/h)
+      this.fuel = 80 + Math.random() * 15; // High fuel (80-95%)
+      this.engineTemp = 85 + Math.random() * 5; // Moderate temp (85-90°C)
+    } else {
+      // Average driver metrics
+      this.status = 'On Route';
+      this.speed = 65 + Math.random() * 10; // Mixed speed (65-75 km/h)
+      this.fuel = 40 + Math.random() * 40; // Mixed fuel (40-80%)
+      this.engineTemp = 87 + Math.random() * 8; // Mixed temp (87-95°C)
+    }
+    
     this.odometer = Math.floor(Math.random() * 50000) + 100000;
-    this.engineTemp = Math.floor(Math.random() * 10) + 85; // 85-95°C
-    this.distanceCovered = 0;
+    this.distanceCovered = this.route.distance * (initialProgress / 100);
   }
   
   update() {
-    // Update position (simulate movement)
-    this.position.lat += (Math.random() - 0.5) * 0.1;
-    this.position.lng += (Math.random() - 0.5) * 0.1;
+    // Only move if not at 100% progress
+    const progress = Math.min(100, (this.distanceCovered / this.route.distance) * 100);
     
-    // Update vehicle metrics
-    this.speed = Math.max(40, Math.min(80, this.speed + (Math.random() - 0.5) * 5));
-    this.fuel = Math.max(10, this.fuel - 0.1);
-    this.engineTemp = Math.max(80, Math.min(100, this.engineTemp + (Math.random() - 0.5) * 2));
-    this.distanceCovered += this.speed / 60; // km per minute
-    this.odometer += this.speed / 60;
+    if (progress < 100) {
+      // Calculate movement towards destination
+      const originCoords = CITY_COORDINATES[this.route.origin];
+      const destCoords = CITY_COORDINATES[this.route.destination];
+      
+      // Update distance covered
+      this.distanceCovered += this.speed / 60; // km per minute
+      this.odometer += this.speed / 60;
+      
+      // Update position based on new progress
+      const newProgress = Math.min(100, (this.distanceCovered / this.route.distance) * 100);
+      const progressRatio = newProgress / 100;
+      
+      this.position = {
+        lat: originCoords.lat + (destCoords.lat - originCoords.lat) * progressRatio,
+        lng: originCoords.lng + (destCoords.lng - originCoords.lng) * progressRatio
+      };
+    }
+    
+    // Update vehicle metrics based on driver profile
+    if (this.vehicleId === 0) {
+      // Bad driver - erratic metrics
+      this.speed = Math.max(80, Math.min(100, this.speed + (Math.random() - 0.5) * 8));
+      this.fuel = Math.max(5, this.fuel - 0.2); // Rapid fuel consumption
+      this.engineTemp = Math.max(94, Math.min(100, this.engineTemp + (Math.random() - 0.3) * 2));
+    } else if (this.vehicleId === 1) {
+      // Good driver - stable metrics
+      this.speed = Math.max(58, Math.min(62, this.speed + (Math.random() - 0.5) * 2));
+      this.fuel = Math.max(50, this.fuel - 0.05); // Efficient fuel consumption
+      this.engineTemp = Math.max(83, Math.min(90, this.engineTemp + (Math.random() - 0.5) * 1));
+    } else {
+      // Average drivers - moderate variation
+      this.speed = Math.max(60, Math.min(80, this.speed + (Math.random() - 0.5) * 5));
+      this.fuel = Math.max(20, this.fuel - 0.1);
+      this.engineTemp = Math.max(85, Math.min(95, this.engineTemp + (Math.random() - 0.5) * 2));
+    }
     
     // Update status based on conditions
     if (this.fuel < 20) {
       this.status = 'Low Fuel';
     } else if (this.engineTemp > 95) {
       this.status = 'High Temperature';
-    } else if (Math.random() < 0.02) {
-      this.status = Math.random() < 0.5 ? 'Rest Stop' : 'Maintenance';
+    } else if (progress >= 100) {
+      this.status = 'Delivered';
     } else {
       this.status = 'On Route';
     }
@@ -118,6 +193,8 @@ class VehicleSimulator {
   }
   
   getVehicleData() {
+    const progress = Math.min(100, Math.round((this.distanceCovered / this.route.distance) * 100));
+    
     return {
       id: this.vehicleId,
       truck: {
@@ -134,9 +211,10 @@ class VehicleSimulator {
       engineTemp: Math.round(this.engineTemp),
       distanceCovered: Math.round(this.distanceCovered),
       route: {
-        origin: this.origin,
-        destination: this.destination,
-        progress: Math.min(100, Math.round((this.distanceCovered / 500) * 100))
+        origin: this.route.origin,
+        destination: this.route.destination,
+        distance: this.route.distance,
+        progress: progress
       },
       lastUpdated: new Date().toISOString()
     };
