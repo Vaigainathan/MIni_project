@@ -1,8 +1,7 @@
-// truck_app/src/pages/Dashboard.jsx - Updated for real-time data
 import React, { useState, useEffect } from 'react';
-import StatsCard from '../components/StatsCards';
+import StatsCard from '../components/StatsCard';  // Note: Your earlier file was StatsCard, not StatsCards
 import TruckCard from '../components/TruckCard';
-import RouteTracker from '../components/RouteTracker';
+import TruckMap from '../components/TruckMap';  // Import TruckMap for Google Maps
 import GoodsTable from '../components/GoodsTable';
 import socketService from '../services/socketService';
 import '../styles/Dashboard.css';
@@ -13,28 +12,23 @@ function Dashboard() {
     totalTrucks: 0,
     goodsInTransit: 0,
     activeRoutes: 0,
-    totalDistance: 0
+    totalDistance: 0,
   });
 
   useEffect(() => {
-    // Connect to socket server
     const socket = socketService.connect();
 
-    // Initial data
     socketService.on('initial-data', (data) => {
       formatTrucksData(data);
     });
 
-    // Real-time updates
     socketService.on('vehicle-updates', (data) => {
       formatTrucksData(data);
     });
 
-    // Fetch stats
     fetchStats();
     const statsInterval = setInterval(fetchStats, 5000);
 
-    // Cleanup
     return () => {
       clearInterval(statsInterval);
       socketService.off('initial-data');
@@ -44,7 +38,7 @@ function Dashboard() {
   }, []);
 
   const formatTrucksData = (data) => {
-    const formattedTrucks = data.map(vehicle => ({
+    const formattedTrucks = data.map((vehicle) => ({
       id: vehicle.id.toString().padStart(3, '0'),
       description: `${vehicle.truck.make} ${vehicle.truck.model}`,
       status: vehicle.status,
@@ -65,19 +59,18 @@ function Dashboard() {
         destination: vehicle.route.destination,
         status: vehicle.status === 'On Route' ? 'Transit' : 'Active',
         weight: `${vehicle.goods.weight} kg`,
-        value: `₹${vehicle.goods.value.toLocaleString()}`
+        value: `₹${vehicle.goods.value.toLocaleString()}`,
       },
-      route: vehicle.route
+      route: vehicle.route,
     }));
-    
+
     setTrucks(formattedTrucks);
-    
-    // Update stats
+
     const newStats = {
       totalTrucks: formattedTrucks.length,
       goodsInTransit: formattedTrucks.reduce((sum, t) => sum + parseInt(t.goods.quantity), 0),
-      activeRoutes: formattedTrucks.filter(t => t.status === 'On Route').length,
-      totalDistance: Math.round(data.reduce((sum, v) => sum + v.distanceCovered, 0))
+      activeRoutes: formattedTrucks.filter((t) => t.status === 'On Route').length,
+      totalDistance: Math.round(data.reduce((sum, v) => sum + v.distanceCovered, 0)),
     };
     setStats(newStats);
   };
@@ -92,7 +85,7 @@ function Dashboard() {
     }
   };
 
-  const goods = trucks.map(truck => truck.goods);
+  const goods = trucks.map((truck) => truck.goods);
 
   return (
     <div className="dashboard-container">
@@ -111,21 +104,22 @@ function Dashboard() {
         <StatsCard title="Total Distance" value={`${stats.totalDistance.toLocaleString()} km`} />
       </div>
 
-      <div className="row">
-        {/* Trucks List */}
-        <div className="col-md-4">
-          <h4>Truck Fleet</h4>
-          {trucks.map(truck => (
+      {/* Truck Cards Row */}
+      <div className="truck-fleet-section">
+        <h4>Truck Fleet</h4>
+        <div className="truck-cards-row">
+          {trucks.map((truck) => (
             <TruckCard key={truck.id} truck={truck} />
           ))}
         </div>
-
-        {/* Route Tracker */}
-        <div className="col-md-8">
-          <h4>Route Tracker</h4>
-          <RouteTracker trucks={trucks} />
-        </div>
       </div>
+
+      {/* Route Map Below */}
+      <div className="map-section mt-4">
+        <h4>Route Tracker</h4>
+        <TruckMap trucks={trucks} />
+      </div>
+
 
       {/* Goods Information */}
       <div className="row mt-4">
