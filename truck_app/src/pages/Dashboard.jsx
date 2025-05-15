@@ -1,56 +1,103 @@
-import React, { useState } from 'react';
+// truck_app/src/pages/Dashboard.jsx - Updated for real-time data
+import React, { useState, useEffect } from 'react';
 import StatsCard from '../components/StatsCards';
 import TruckCard from '../components/TruckCard';
 import RouteTracker from '../components/RouteTracker';
 import GoodsTable from '../components/GoodsTable';
-import '../styles/Dashboard.css'; // Assuming you have a CSS file for styling
+import socketService from '../services/socketService';
+import '../styles/Dashboard.css';
 
 function Dashboard() {
-  // Sample data - in a real app, this would come from an API
-  const [trucks] = useState([
-    {
-      id: '001',
-      description: 'Delivery Truck',
-      status: 'Active',
-      mileage: '120,000 km',
-      location: 'New York',
-      speed: '80 km/h',
-      odometer: '125,000 km',
-      type: 'Delivery'
-    },
-    {
-      id: '002',
-      description: 'Refrigerated Truck',
-      status: 'Transit',
-      mileage: '80,000 km',
-      location: 'Chicago',
-      speed: '70 km/h',
-      odometer: '85,000 km',
-      type: 'Refrigerated'
-    }
-  ]);
+  const [trucks, setTrucks] = useState([]);
+  const [stats, setStats] = useState({
+    totalTrucks: 0,
+    goodsInTransit: 0,
+    activeRoutes: 0,
+    totalDistance: 0
+  });
 
-  const [goods] = useState([
-    {
-      id: 'GD001',
-      description: 'Electronics',
-      quantity: '500 Units',
-      destination: 'New York',
-      status: 'Transit'
-    },
-    {
-      id: 'GD002',
-      description: 'Perishable Goods',
-      quantity: '200 Boxes',
-      destination: 'Chicago',
-      status: 'Active'
+  useEffect(() => {
+    // Connect to socket server
+    const socket = socketService.connect();
+
+    // Initial data
+    socketService.on('initial-data', (data) => {
+      formatTrucksData(data);
+    });
+
+    // Real-time updates
+    socketService.on('vehicle-updates', (data) => {
+      formatTrucksData(data);
+    });
+
+    // Fetch stats
+    fetchStats();
+    const statsInterval = setInterval(fetchStats, 5000);
+
+    // Cleanup
+    return () => {
+      clearInterval(statsInterval);
+      socketService.off('initial-data');
+      socketService.off('vehicle-updates');
+      socketService.disconnect();
+    };
+  }, []);
+
+  const formatTrucksData = (data) => {
+    const formattedTrucks = data.map(vehicle => ({
+      id: vehicle.id.toString().padStart(3, '0'),
+      description: `${vehicle.truck.make} ${vehicle.truck.model}`,
+      status: vehicle.status,
+      mileage: `${vehicle.truck.odometer.toLocaleString()} km`,
+      location: `${vehicle.route.origin} → ${vehicle.route.destination}`,
+      speed: `${vehicle.speed} km/h`,
+      odometer: `${vehicle.truck.odometer.toLocaleString()} km`,
+      type: vehicle.goods.type,
+      position: vehicle.position,
+      fuel: vehicle.fuel,
+      engineTemp: vehicle.engineTemp,
+      driver: vehicle.driver,
+      helper: vehicle.helper,
+      goods: {
+        id: `GD${vehicle.id.toString().padStart(3, '0')}`,
+        description: vehicle.goods.type,
+        quantity: `${vehicle.goods.quantity} Units`,
+        destination: vehicle.route.destination,
+        status: vehicle.status === 'On Route' ? 'Transit' : 'Active',
+        weight: `${vehicle.goods.weight} kg`,
+        value: `₹${vehicle.goods.value.toLocaleString()}`
+      },
+      route: vehicle.route
+    }));
+    
+    setTrucks(formattedTrucks);
+    
+    // Update stats
+    const newStats = {
+      totalTrucks: formattedTrucks.length,
+      goodsInTransit: formattedTrucks.reduce((sum, t) => sum + parseInt(t.goods.quantity), 0),
+      activeRoutes: formattedTrucks.filter(t => t.status === 'On Route').length,
+      totalDistance: Math.round(data.reduce((sum, v) => sum + v.distanceCovered, 0))
+    };
+    setStats(newStats);
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/stats');
+      const data = await response.json();
+      setStats(data);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
     }
-  ]);
+  };
+
+  const goods = trucks.map(truck => truck.goods);
 
   return (
     <div className="dashboard-container">
       <div className="header">
-        <h2>Logistics Dashboard</h2>
+        <h2>Logistics Dashboard - Real-time</h2>
         <div>
           <button className="btn btn-primary">Generate Report</button>
         </div>
@@ -58,10 +105,10 @@ function Dashboard() {
 
       {/* Quick Stats */}
       <div className="row mb-4">
-        <StatsCard title="Total Trucks" value="42" />
-        <StatsCard title="Goods in Transit" value="127" />
-        <StatsCard title="Active Routes" value="18" />
-        <StatsCard title="Total Distance" value="24,563 km" />
+        <StatsCard title="Total Trucks" value={stats.totalTrucks} />
+        <StatsCard title="Goods in Transit" value={stats.goodsInTransit} />
+        <StatsCard title="Active Routes" value={stats.activeRoutes} />
+        <StatsCard title="Total Distance" value={`${stats.totalDistance.toLocaleString()} km`} />
       </div>
 
       <div className="row">
@@ -76,7 +123,7 @@ function Dashboard() {
         {/* Route Tracker */}
         <div className="col-md-8">
           <h4>Route Tracker</h4>
-          <RouteTracker />
+          <RouteTracker trucks={trucks} />
         </div>
       </div>
 
