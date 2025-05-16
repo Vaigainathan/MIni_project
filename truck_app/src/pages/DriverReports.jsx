@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import DriverReportComponent from '../components/DriverReportComponent';
 import { User, FileText, Download, Filter } from 'lucide-react';
 import '../styles/DriverReports.css';
-import '../styles/DriverReportsReset.css';
 
 function DriverReports() {
   const [selectedDriver, setSelectedDriver] = useState(null);
@@ -34,6 +33,14 @@ function DriverReports() {
     };
 
     fetchDrivers();
+
+    // Add class to body for full-width layout
+    document.body.classList.add('reports-page');
+    
+    // Cleanup function
+    return () => {
+      document.body.classList.remove('reports-page');
+    };
   }, []);
 
   const handleDriverSelect = (driver) => {
@@ -49,7 +56,11 @@ function DriverReports() {
   };
 
   return (
-    <div className="driver-reports-container">
+    <div className="driver-reports-container full-width">
+      <a href="/dashboard" className="home-button">
+        <i className="fas fa-home"></i>
+        Back to Dashboard
+      </a>
       <div className="header-section">
         <h1 className="page-title">Driver Performance Reports</h1>
         <p className="page-description">Analyze driver performance metrics and get improvement recommendations</p>
@@ -67,6 +78,7 @@ function DriverReports() {
           
           {loading ? (
             <div className="loading-container">
+              <div className="loading-spinner"></div>
               <div className="loading-text">Loading drivers...</div>
             </div>
           ) : (
