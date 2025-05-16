@@ -278,6 +278,95 @@ app.get('/api/stats', (req, res) => {
   res.json(stats);
 });
 
+
+const generateDriverMetrics = (driverId) => {
+  // Get the driver's profile from existing DRIVERS array
+  const driver = DRIVERS[driverId];
+  const profile = driver.profile;
+  let metrics = {};
+  
+  switch(profile) {
+    case 'Bad':
+      metrics = {
+        avgFuelConsumption: 9.5 + Math.random() * 1.5, // Poor fuel efficiency
+        avgSpeed: 48 + Math.random() * 5, // Below optimal speed
+        avgDeliveryTime: 54 + Math.random() * 6, // Extended delivery times
+        totalDeliveries: Math.floor(Math.random() * 30) + 120,
+        totalDistance: Math.floor(Math.random() * 10000) + 40000,
+        incidents: Math.floor(Math.random() * 5) + 3,
+        lateDeliveries: Math.floor(Math.random() * 10) + 15,
+        idleTime: 15 + Math.random() * 5, // High idle time
+        harshBraking: Math.floor(Math.random() * 10) + 20,
+        rapidAcceleration: Math.floor(Math.random() * 8) + 15,
+        speedingIncidents: Math.floor(Math.random() * 10) + 25
+      };
+      break;
+    case 'Good':
+      metrics = {
+        avgFuelConsumption: 7.2 + Math.random() * 0.8, // Excellent fuel efficiency
+        avgSpeed: 58 + Math.random() * 4, // Optimal speed
+        avgDeliveryTime: 42 + Math.random() * 4, // Fast delivery times
+        totalDeliveries: Math.floor(Math.random() * 50) + 150,
+        totalDistance: Math.floor(Math.random() * 15000) + 60000,
+        incidents: Math.floor(Math.random() * 2),
+        lateDeliveries: Math.floor(Math.random() * 5) + 2,
+        idleTime: 4 + Math.random() * 3, // Low idle time
+        harshBraking: Math.floor(Math.random() * 5) + 5,
+        rapidAcceleration: Math.floor(Math.random() * 3) + 2,
+        speedingIncidents: Math.floor(Math.random() * 5) + 5
+      };
+      break;
+    default: // Average
+      metrics = {
+        avgFuelConsumption: 8.2 + Math.random() * 1.2,
+        avgSpeed: 54 + Math.random() * 6,
+        avgDeliveryTime: 48 + Math.random() * 5,
+        totalDeliveries: Math.floor(Math.random() * 40) + 130,
+        totalDistance: Math.floor(Math.random() * 12000) + 50000,
+        incidents: Math.floor(Math.random() * 3) + 1,
+        lateDeliveries: Math.floor(Math.random() * 8) + 8,
+        idleTime: 8 + Math.random() * 4,
+        harshBraking: Math.floor(Math.random() * 8) + 10,
+        rapidAcceleration: Math.floor(Math.random() * 6) + 7,
+        speedingIncidents: Math.floor(Math.random() * 8) + 12
+      };
+  }
+  
+  return {
+    driverId,
+    driverName: driver.name,
+    profile,
+    metrics,
+    lastUpdated: new Date().toISOString()
+  };
+};
+
+// Add driver metrics endpoint
+app.get('/api/drivers/:id/metrics', (req, res) => {
+  const driverId = parseInt(req.params.id);
+  if (driverId >= 0 && driverId < DRIVERS.length) {
+    const metrics = generateDriverMetrics(driverId);
+    res.json(metrics);
+  } else {
+    res.status(404).json({ error: 'Driver not found' });
+  }
+});
+
+// Add endpoint to get all drivers
+app.get('/api/drivers', (req, res) => {
+  const driversWithMetrics = DRIVERS.map((driver, index) => {
+    const metrics = generateDriverMetrics(index);
+    return {
+      ...driver,
+      totalDeliveries: metrics.metrics.totalDeliveries,
+      avgRating: driver.profile === 'Good' ? 4.5 + Math.random() * 0.4 : 
+                 driver.profile === 'Bad' ? 2.5 + Math.random() * 0.5 :
+                 3.5 + Math.random() * 0.5
+    };
+  });
+  res.json(driversWithMetrics);
+});
+
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

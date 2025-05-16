@@ -1,0 +1,623 @@
+/* truck_app/src/styles/DriverReports.css */
+
+.driver-reports-container {
+  padding: 20px;
+  background-color: var(--light-bg);
+  min-height: 100vh;
+}
+
+.header-section {
+  margin-bottom: 30px;
+}
+
+.page-title {
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin: 0 0 10px 0;
+  font-weight: 600;
+}
+
+.page-description {
+  color: #666;
+  margin: 0;
+}
+
+.driver-selection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.btn-filter {
+  display: flex;
+  align-items: center;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-filter:hover {
+  background-color: var(--secondary-color);
+}
+
+.icon-small {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+}
+
+.loading-text {
+  font-size: 1.125rem;
+  color: #666;
+}
+
+.driver-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.driver-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.driver-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border-color: var(--accent-color);
+}
+
+.driver-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.driver-info {
+  display: flex;
+  align-items: center;
+}
+
+.driver-icon {
+  width: 40px;
+  height: 40px;
+  color: #555;
+  margin-right: 12px;
+}
+
+.driver-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.driver-id {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0;
+}
+
+.profile-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.profile-good {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.profile-average {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.profile-bad {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.driver-stats {
+  margin-bottom: 15px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+}
+
+.stat-label {
+  color: #666;
+}
+
+.stat-value {
+  font-weight: 600;
+  color: #333;
+}
+
+.btn-view-report {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 8px 12px;
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+  color: var(--primary-color);
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-view-report:hover {
+  background-color: rgba(var(--primary-color-rgb), 0.2);
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  color: var(--accent-color);
+  background: none;
+  border: none;
+  padding: 0;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.btn-back:hover {
+  color: var(--primary-color);
+}
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-export:hover {
+  background-color: #e67600;
+}
+
+/* Add CSS variable for primary color with RGB */
+:root {
+  --primary-color-rgb: 26, 35, 126;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .driver-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .driver-selection-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .btn-filter {
+    margin-top: 10px;
+  }
+  
+  .report-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .btn-export {
+    margin-top: 10px;
+  }
+}
+
+/* Add these additional styles to truck_app/src/styles/DriverReports.css */
+
+/* Driver Report Component Styles */
+.driver-report {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.report-header-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.driver-profile {
+  display: flex;
+  align-items: center;
+}
+
+.driver-avatar-icon {
+  width: 50px;
+  height: 50px;
+  color: #555;
+  margin-right: 16px;
+}
+
+.driver-report-name {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.driver-report-id {
+  color: #666;
+  margin: 0;
+}
+
+.performance-score {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 4px solid #e0e0e0;
+}
+
+.score-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.score-excellent {
+  color: #28a745;
+}
+
+.score-good {
+  color: #ffc107;
+}
+
+.score-poor {
+  color: #dc3545;
+}
+
+.score-label {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.metric-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.metric-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.metric-icon.fuel {
+  color: #1976d2;
+}
+
+.metric-icon.speed {
+  color: #7b1fa2;
+}
+
+.metric-icon.time {
+  color: #388e3c;
+}
+
+.metric-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.metric-value {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.metric-status {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+}
+
+.status-excellent {
+  color: #28a745;
+}
+
+.status-good {
+  color: #ffc107;
+}
+
+.status-poor {
+  color: #dc3545;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-card-label {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0 0 8px 0;
+}
+
+.stat-card-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.behavior-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.behavior-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 20px 0;
+}
+
+.section-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  color: var(--accent-color);
+}
+
+.behavior-metrics {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.behavior-metric {
+  margin-bottom: 4px;
+}
+
+.behavior-label {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0 0 8px 0;
+}
+
+.behavior-chart {
+  display: flex;
+  align-items: center;
+}
+
+.behavior-bar {
+  flex-grow: 1;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 12px;
+}
+
+.behavior-fill {
+  height: 100%;
+  transition: width 0.5s ease;
+}
+
+.behavior-fill.harsh-braking {
+  background: #f44336;
+}
+
+.behavior-fill.rapid-acceleration {
+  background: #ff9800;
+}
+
+.behavior-fill.speeding {
+  background: #ffc107;
+}
+
+.behavior-value {
+  font-weight: 600;
+  min-width: 30px;
+  text-align: right;
+}
+
+.recommendations-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+}
+
+.recommendations-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 20px 0;
+}
+
+.recommendation-item {
+  border-left: 4px solid var(--accent-color);
+  padding-left: 16px;
+  margin-bottom: 20px;
+}
+
+.recommendation-category {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.recommendation-issue {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0 0 12px 0;
+}
+
+.suggestion-list {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.suggestion-item {
+  display: flex;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.suggestion-bullet {
+  color: #28a745;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.error-container {
+  text-align: center;
+  padding: 40px;
+}
+
+.error-icon {
+  width: 48px;
+  height: 48px;
+  color: #dc3545;
+  margin-bottom: 16px;
+}
+
+.error-text {
+  font-size: 1.125rem;
+  color: #666;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .report-header-card {
+    flex-direction: column;
+  }
+  
+  .driver-profile {
+    margin-bottom: 20px;
+  }
+  
+  .metrics-grid, 
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .behavior-chart {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .behavior-bar {
+    width: 100%;
+    margin: 8px 0;
+  }
+  
+  .behavior-value {
+    text-align: left;
+  }
+}

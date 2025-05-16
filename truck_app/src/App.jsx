@@ -6,6 +6,7 @@ import Goods from './pages/Goods';
 import Reports from './pages/Reports';
 import RoutesPage from './pages/Routes';
 import Trucks from './pages/Trucks';
+import DriverReports from './pages/DriverReports';
 import './styles/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -29,9 +30,10 @@ function App() {
             <Route path="/" element={<Navigate to="/dashboard" />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/goods" element={<Goods />} />
-            <Route path="/reports" element={<Reports />} />
+            <Route path="/reports" element={<DriverReports />} />
             <Route path="/routes" element={<RoutesPage />} />
             <Route path="/trucks" element={<Trucks />} />
+            <Route path="/driver-reports" element={<DriverReports />} />
           </Routes>
         </div>
       </div>
