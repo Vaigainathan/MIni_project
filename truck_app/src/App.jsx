@@ -20,22 +20,32 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <button className="menu-toggle" onClick={toggleSidebar}>
-          <i className="fas fa-bars"></i>
-        </button>
-        <Sidebar active={sidebarActive} />
-        <div className={`sidebar-overlay ${sidebarActive ? 'active' : ''}`} onClick={toggleSidebar}></div>
-        <div className="main-content">
-          <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/goods" element={<Goods />} />
-            <Route path="/reports" element={<DriverReports />} />
-            <Route path="/routes" element={<RoutesPage />} />
-            <Route path="/trucks" element={<Trucks />} />
-            <Route path="/driver-reports" element={<DriverReports />} />
-          </Routes>
-        </div>
+        {/* Only show toggle button and sidebar on non-reports pages */}
+        <Routes>
+          <Route path="/reports" element={<DriverReports />} />
+          <Route path="/driver-reports" element={<DriverReports />} />
+          <Route
+            path="*"
+            element={
+              <>
+                <button className={`menu-toggle ${sidebarActive ? 'active' : ''}`} onClick={toggleSidebar}>
+                  <i className="fas fa-bars"></i>
+                </button>
+                <Sidebar active={sidebarActive} />
+                <div className={`sidebar-overlay ${sidebarActive ? 'active' : ''}`} onClick={toggleSidebar}></div>
+                <div className="main-content">
+                  <Routes>
+                    <Route path="/" element={<Navigate to="/dashboard" />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/goods" element={<Goods />} />
+                    <Route path="/routes" element={<RoutesPage />} />
+                    <Route path="/trucks" element={<Trucks />} />
+                  </Routes>
+                </div>
+              </>
+            }
+          />
+        </Routes>
       </div>
     </Router>
   );

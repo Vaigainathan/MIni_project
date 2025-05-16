@@ -1,0 +1,65 @@
+/* truck_app/src/styles/DriverReportsReset.css */
+
+/* Reset for driver reports component */
+.driver-reports-container {
+  all: initial;
+  font-family: "Playfair Display", serif;
+  display: block;
+  box-sizing: border-box;
+  padding: 20px;
+  background-color: #f4f6f8;
+  min-height: 100vh;
+  color: #333;
+}
+
+/* Reset core elements */
+.driver-reports-container h1,
+.driver-reports-container h2,
+.driver-reports-container h3,
+.driver-reports-container p,
+.driver-reports-container div,
+.driver-reports-container button,
+.driver-reports-container span {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  line-height: normal;
+}
+
+/* Define key variables */
+.driver-reports-container {
+  --report-primary-color: #1a237e;
+  --report-secondary-color: #0d47a1;
+  --report-accent-color: #ff8401;
+  --report-light-bg: #f4f6f8;
+  --report-success-color: #28a745;
+  --report-warning-color: #ffc107;
+  --report-danger-color: #dc3545;
+}
+
+/* Ensure the driver-card class doesn't conflict with truck-card */
+.driver-reports-container .driver-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 15px;
+  display: block;
+}
+
+/* Ensure our stat-card doesn't conflict with stats-card */
+.driver-reports-container .stat-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+/* Override bootstrap styles */
+.driver-reports-container button {
+  border-radius: 6px;
+  cursor: pointer;
+}
