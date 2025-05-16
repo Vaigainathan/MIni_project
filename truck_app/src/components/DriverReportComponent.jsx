@@ -13,6 +13,8 @@ import {
   Target
 } from 'lucide-react';
 import '../styles/DriverReports.css';
+// Import the override CSS AFTER the regular CSS
+import '../styles/DriverReportsOverride.css';
 
 // Mock historical driver data - In real app, this would come from API/database
 const generateHistoricalData = (driverId) => {

@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import DriverReportComponent from '../components/DriverReportComponent';
 import { User, FileText, Download, Filter } from 'lucide-react';
 import '../styles/DriverReports.css';
+// Import the override CSS AFTER the regular CSS
+import '../styles/DriverReportsOverride.css';
 
 function DriverReports() {
   const [selectedDriver, setSelectedDriver] = useState(null);
