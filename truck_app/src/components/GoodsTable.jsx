@@ -1,49 +1,43 @@
 // truck_app/src/components/GoodsTable.jsx - Enhanced with more details
 import React from 'react';
+import '../styles/Dashboard.css';
 
 function GoodsTable({ goods }) {
-  const getStatusClass = (status) => {
-    switch(status) {
-      case 'Transit': return 'warning';
-      case 'Active': return 'success';
-      case 'Delivered': return 'info';
-      default: return 'secondary';
-    }
-  };
-
+  if (!goods || goods.length === 0) {
+    return <p>No goods data available</p>;
+  }
+  
   return (
-    <div className="goods-table-container">
-      <table className="table table-striped goods-table">
-        <thead>
-          <tr>
-            <th>Goods ID</th>
-            <th>Description</th>
-            <th>Quantity</th>
-            <th>Weight</th>
-            <th>Value</th>
-            <th>Destination</th>
-            <th>Status</th>
+    <table className="goods-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Description</th>
+          <th>Quantity</th>
+          <th>Weight</th>
+          <th>Destination</th>
+          <th>Status</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {goods.map((item, index) => (
+          <tr key={item.id || index}>
+            <td>{item.id}</td>
+            <td>{item.description}</td>
+            <td>{item.quantity}</td>
+            <td>{item.weight}</td>
+            <td>{item.destination}</td>
+            <td>
+              <span className={`status-badge status-${(item.status || '').toLowerCase()}`}>
+                {item.status}
+              </span>
+            </td>
+            <td>{item.value}</td>
           </tr>
-        </thead>
-        <tbody>
-          {goods.map((item) => (
-            <tr key={item.id}>
-              <td>{item.id}</td>
-              <td>{item.description}</td>
-              <td>{item.quantity}</td>
-              <td>{item.weight || 'N/A'}</td>
-              <td>{item.value || 'N/A'}</td>
-              <td>{item.destination}</td>
-              <td>
-                <span className={`badge bg-${getStatusClass(item.status)}`}>
-                  {item.status}
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </table>
   );
 }
 
