@@ -8,9 +8,8 @@
 /* Container styles */
 .driver-reports-container {
   padding: 20px;
-  background-color: var(--light-bg);
+  background-color: var(--report-light-bg);
   min-height: 100vh;
-  font-family: "Playfair Display", serif;
 }
 
 /* Header section */
@@ -19,9 +18,9 @@
 }
 
 .page-title {
-  font-size: 2rem !important;
-  color: var(--primary-color);
-  margin: 0 0 10px 0 !important;
+  font-size: 2rem;
+  color: var(--report-primary-color);
+  margin: 0 0 10px 0;
   font-weight: 600;
 }
 
