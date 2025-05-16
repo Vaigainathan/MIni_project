@@ -1,18 +1,16 @@
 // truck_app/src/components/DriverReportComponent.jsx
-import React, { useState, useEffect } from 'react';
-import { 
-  User, 
-  Fuel, 
-  Clock, 
-  Gauge, 
-  TrendingUp, 
-  TrendingDown, 
-  AlertCircle,
-  CheckCircle,
+import React, { useState, useEffect } from "react";
+import { Card, Table } from "react-bootstrap";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  Fuel,
+  Loader2,
   BarChart3,
   Target
-} from 'lucide-react';
-import '../styles/DriverReports.css';
+} from "lucide-react";
+import "../styles/DriverReports.css";
 
 // Mock historical driver data - In real app, this would come from API/database
 const generateHistoricalData = (driverId) => {
@@ -51,339 +49,196 @@ const BENCHMARKS = {
   lateDeliveryRate: { excellent: 5, good: 10, poor: 15 }
 };
 
-const DriverReportComponent = ({ driverId = 1, driverName = "Rajesh Kumar" }) => {
-  const [metrics, setMetrics] = useState(null);
-  const [loading, setLoading] = useState(true);
+const DriverReportComponent = ({ driverId }) => {
+  const [performanceData, setPerformanceData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch driver metrics from API
-    const fetchDriverMetrics = async () => {
-      try {
-        const response = await fetch(`http://localhost:5000/api/drivers/${driverId}/metrics`);
-        const data = await response.json();
-        setMetrics(data.metrics);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching driver metrics:', error);
-        // Fallback to mock data if API fails
-        setMetrics(generateHistoricalData(driverId));
-        setLoading(false);
-      }
-    };
-
-    fetchDriverMetrics();
+    // Simulate API call to get driver data
+    setIsLoading(true);
+    setTimeout(() => {
+      const data = generateHistoricalData(driverId);
+      setPerformanceData(data);
+      setIsLoading(false);
+    }, 1000);
   }, [driverId]);
 
-  const evaluateMetric = (value, benchmarks, isLowerBetter = true) => {
-    if (isLowerBetter) {
-      if (value <= benchmarks.excellent) return 'excellent';
-      if (value <= benchmarks.good) return 'good';
-      return 'poor';
-    } else {
-      if (value >= benchmarks.excellent) return 'excellent';
-      if (value >= benchmarks.good) return 'good';
-      return 'poor';
-    }
-  };
-
-  const getRecommendations = (metrics) => {
-    const recommendations = [];
-    
-    // Fuel consumption analysis
-    const fuelEval = evaluateMetric(metrics.avgFuelConsumption, BENCHMARKS.fuelConsumption);
-    if (fuelEval === 'poor') {
-      recommendations.push({
-        category: 'Fuel Efficiency',
-        issue: 'High fuel consumption detected',
-        suggestions: [
-          'Reduce harsh acceleration and sudden braking',
-          'Maintain steady speeds on highways',
-          'Ensure proper tire pressure maintenance',
-          'Schedule regular engine maintenance'
-        ]
-      });
-    }
-    
-    // Speed maintenance analysis
-    const speedEval = evaluateMetric(metrics.avgSpeed, BENCHMARKS.avgSpeed, false);
-    if (speedEval === 'poor') {
-      recommendations.push({
-        category: 'Speed Management',
-        issue: 'Below optimal speed average',
-        suggestions: [
-          'Plan routes to avoid heavy traffic areas',
-          'Optimize departure times to minimize congestion',
-          'Use highway routes when possible',
-          'Monitor and reduce unnecessary stops'
-        ]
-      });
-    }
-    
-    // Delivery time analysis
-    const deliveryEval = evaluateMetric(metrics.avgDeliveryTime, BENCHMARKS.deliveryTime);
-    if (deliveryEval === 'poor') {
-      recommendations.push({
-        category: 'Delivery Efficiency',
-        issue: 'Extended delivery times',
-        suggestions: [
-          'Improve route planning and optimization',
-          'Reduce loading/unloading times',
-          'Minimize rest stops during peak hours',
-          'Use GPS for real-time traffic updates'
-        ]
-      });
-    }
-    
-    // Idle time analysis
-    const idleEval = evaluateMetric(metrics.idleTime, BENCHMARKS.idleTime);
-    if (idleEval === 'poor') {
-      recommendations.push({
-        category: 'Idle Time Reduction',
-        issue: 'Excessive engine idling',
-        suggestions: [
-          'Turn off engine during extended stops',
-          'Improve scheduling to reduce waiting times',
-          'Use auxiliary power units for cabin comfort',
-          'Educate on fuel wastage from idling'
-        ]
-      });
-    }
-    
-    // Late delivery analysis
-    const lateDeliveryRate = (metrics.lateDeliveries / metrics.totalDeliveries) * 100;
-    const lateEval = evaluateMetric(lateDeliveryRate, BENCHMARKS.lateDeliveryRate);
-    if (lateEval === 'poor') {
-      recommendations.push({
-        category: 'On-Time Performance',
-        issue: 'High rate of late deliveries',
-        suggestions: [
-          'Add buffer time to delivery schedules',
-          'Improve communication with dispatch',
-          'Address recurring delay causes',
-          'Consider traffic patterns in planning'
-        ]
-      });
-    }
-    
-    // Driving behavior analysis
-    if (metrics.harshBraking > 15 || metrics.rapidAcceleration > 10) {
-      recommendations.push({
-        category: 'Driving Behavior',
-        issue: 'Aggressive driving patterns detected',
-        suggestions: [
-          'Practice defensive driving techniques',
-          'Maintain safe following distances',
-          'Anticipate traffic flow changes',
-          'Complete advanced driver training'
-        ]
-      });
-    }
-    
-    return recommendations;
-  };
-
-  const getPerformanceScore = (metrics) => {
-    const scores = {
-      fuel: evaluateMetric(metrics.avgFuelConsumption, BENCHMARKS.fuelConsumption) === 'excellent' ? 100 : 
-            evaluateMetric(metrics.avgFuelConsumption, BENCHMARKS.fuelConsumption) === 'good' ? 70 : 33,
-      speed: evaluateMetric(metrics.avgSpeed, BENCHMARKS.avgSpeed, false) === 'excellent' ? 100 : 
-             evaluateMetric(metrics.avgSpeed, BENCHMARKS.avgSpeed, false) === 'good' ? 70 : 33,
-      delivery: evaluateMetric(metrics.avgDeliveryTime, BENCHMARKS.deliveryTime) === 'excellent' ? 100 : 
-                evaluateMetric(metrics.avgDeliveryTime, BENCHMARKS.deliveryTime) === 'good' ? 70 : 33,
-      behavior: ((30 - metrics.harshBraking) / 30 * 50) + ((20 - metrics.rapidAcceleration) / 20 * 50)
-    };
-    
-    // For driver #0 (bad driver), make sure score is exactly 33
-    if (metrics.avgFuelConsumption > 10 && metrics.avgSpeed < 51 && metrics.avgDeliveryTime > 54) {
-      return 33;
-    }
-    
-    return Math.round((scores.fuel + scores.speed + scores.delivery + scores.behavior) / 4);
-  };
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <div className="loading-text">Loading driver report...</div>
+        <Loader2 className="animate-spin" />
+        <p>Loading driver data...</p>
       </div>
     );
   }
 
-  if (!metrics) {
+  if (!performanceData) {
     return (
       <div className="error-container">
-        <AlertCircle className="error-icon" />
-        <p className="error-text">Failed to load driver metrics</p>
+        <AlertTriangle />
+        <p>Unable to load driver data</p>
       </div>
     );
   }
 
-  const recommendations = getRecommendations(metrics);
-  const performanceScore = getPerformanceScore(metrics);
-  const fuelEfficiencyStatus = evaluateMetric(metrics.avgFuelConsumption, BENCHMARKS.fuelConsumption);
-  const speedStatus = evaluateMetric(metrics.avgSpeed, BENCHMARKS.avgSpeed, false);
-  const deliveryTimeStatus = evaluateMetric(metrics.avgDeliveryTime, BENCHMARKS.deliveryTime);
+  const { metrics, deliveries, fuelEfficiency, incidents } = performanceData;
 
   return (
-    <div className="modern-driver-report">
-      <div className="report-container">
-        <div className="driver-profile-section">
-          <div className="driver-avatar">
-            <User size={64} className="avatar-icon" />
-          </div>
-          <div className="driver-details">
-            <h1>{driverName}</h1>
-            <p className="driver-id">Driver ID: #{driverId.toString().padStart(3, '0')}</p>
-            <div className="performance-score-container">
-              <div className={`performance-score score-${performanceScore >= 80 ? 'excellent' : performanceScore >= 60 ? 'good' : 'poor'}`}>
-                {performanceScore}
-              </div>
-              <span>Overall Score</span>
-            </div>
-          </div>
-        </div>
+    <div className="driver-reports-container">
+      <div className="report-header">
+        <h2>Driver Performance Report</h2>
+        <p>Driver ID: {driverId}</p>
+      </div>
 
-        <div className="metrics-container">
-          <div className="metric-card">
-            <div className="metric-header">
-              <Fuel className="metric-icon" />
-              <h2>Fuel Efficiency</h2>
-            </div>
-            <div className="metric-value">{metrics.avgFuelConsumption.toFixed(1)} L/100km</div>
-            <div className={`metric-status status-${fuelEfficiencyStatus}`}>
-              {fuelEfficiencyStatus === 'excellent' ? (
-                <><CheckCircle size={16} /> Excellent</>
-              ) : fuelEfficiencyStatus === 'good' ? (
-                <><AlertCircle size={16} /> Good</>
-              ) : (
-                <><AlertCircle size={16} /> Needs Improvement</>
-              )}
-            </div>
-          </div>
-
-          <div className="metric-card">
-            <div className="metric-header">
-              <Gauge className="metric-icon" />
-              <h2>Average Speed</h2>
-            </div>
-            <div className="metric-value">{metrics.avgSpeed.toFixed(1)} km/h</div>
-            <div className={`metric-status status-${speedStatus}`}>
-              {speedStatus === 'excellent' ? (
-                <><CheckCircle size={16} /> Excellent</>
-              ) : speedStatus === 'good' ? (
-                <><AlertCircle size={16} /> Good</>
-              ) : (
-                <><AlertCircle size={16} /> Below Average</>
-              )}
-            </div>
-          </div>
-
-          <div className="metric-card">
+      <div className="metrics-row">
+        <Card className="metric-card">
+          <Card.Body>
             <div className="metric-header">
               <Clock className="metric-icon" />
-              <h2>Avg Delivery Time</h2>
+              <h3>On-Time Deliveries</h3>
             </div>
-            <div className="metric-value">{metrics.avgDeliveryTime.toFixed(1)} hrs</div>
-            <div className={`metric-status status-${deliveryTimeStatus}`}>
-              {deliveryTimeStatus === 'excellent' ? (
-                <><CheckCircle size={16} /> Excellent</>
-              ) : deliveryTimeStatus === 'good' ? (
-                <><AlertCircle size={16} /> Good</>
-              ) : (
-                <><AlertCircle size={16} /> Extended</>
-              )}
-            </div>
-          </div>
-        </div>
+            <div className="metric-value">{metrics.onTimePercentage}%</div>
+            <Card.Text className="metric-description">
+              {metrics.onTimeChange > 0 ? "+" : ""}{metrics.onTimeChange}% from last month
+            </Card.Text>
+          </Card.Body>
+        </Card>
 
-        <div className="stats-summary">
-          <div className="stat-item">
-            <span className="stat-label">Total Deliveries</span>
-            <span className="stat-value">{metrics.totalDeliveries}</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">Total Distance</span>
-            <span className="stat-value">{(metrics.totalDistance/1000).toFixed(0)}k km</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">Late Deliveries</span>
-            <span className="stat-value">{metrics.lateDeliveries}</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">Incidents</span>
-            <span className="stat-value">{metrics.incidents}</span>
-          </div>
-        </div>
+        <Card className="metric-card">
+          <Card.Body>
+            <div className="metric-header">
+              <Fuel className="metric-icon" />
+              <h3>Fuel Efficiency</h3>
+            </div>
+            <div className="metric-value">{metrics.fuelEfficiency} km/L</div>
+            <Card.Text className="metric-description">
+              {metrics.fuelEfficiencyChange > 0 ? "+" : ""}{metrics.fuelEfficiencyChange}% from last month
+            </Card.Text>
+          </Card.Body>
+        </Card>
 
-        <div className="behavior-section">
-          <h2 className="section-title">
-            <BarChart3 size={20} />
-            Driving Behavior Analysis
-          </h2>
-          <div className="behavior-metrics">
-            <div className="behavior-metric">
-              <div className="behavior-label">
-                <span>Harsh Braking Events</span>
-                <span className="behavior-value">{metrics.harshBraking}</span>
-              </div>
-              <div className="progress-container">
-                <div 
-                  className="progress-bar harsh-braking" 
-                  style={{width: `${Math.min(metrics.harshBraking * 2.5, 100)}%`}}
-                ></div>
-              </div>
+        <Card className="metric-card">
+          <Card.Body>
+            <div className="metric-header">
+              <Target className="metric-icon" />
+              <h3>Performance Score</h3>
             </div>
-            
-            <div className="behavior-metric">
-              <div className="behavior-label">
-                <span>Rapid Acceleration</span>
-                <span className="behavior-value">{metrics.rapidAcceleration}</span>
-              </div>
-              <div className="progress-container">
-                <div 
-                  className="progress-bar rapid-acceleration" 
-                  style={{width: `${Math.min(metrics.rapidAcceleration * 3, 100)}%`}}
-                ></div>
-              </div>
-            </div>
-            
-            <div className="behavior-metric">
-              <div className="behavior-label">
-                <span>Speeding Incidents</span>
-                <span className="behavior-value">{metrics.speedingIncidents}</span>
-              </div>
-              <div className="progress-container">
-                <div 
-                  className="progress-bar speeding" 
-                  style={{width: `${Math.min(metrics.speedingIncidents * 2, 100)}%`}}
-                ></div>
-              </div>
-            </div>
-          </div>
-        </div>
+            <div className="metric-value">{metrics.performanceScore}/100</div>
+            <Card.Text className="metric-description">
+              Based on multiple factors
+            </Card.Text>
+          </Card.Body>
+        </Card>
 
-        {recommendations.length > 0 && (
-          <div className="recommendations-section">
-            <h2 className="section-title">
-              <Target size={20} />
-              Improvement Recommendations
-            </h2>
-            <div className="recommendations-grid">
-              {recommendations.map((rec, index) => (
-                <div key={index} className="recommendation-card">
-                  <h3>{rec.category}</h3>
-                  <p className="issue">{rec.issue}</p>
-                  <ul className="suggestions">
-                    {rec.suggestions.map((suggestion, idx) => (
-                      <li key={idx}>{suggestion}</li>
-                    ))}
-                  </ul>
-                </div>
+        <Card className="metric-card">
+          <Card.Body>
+            <div className="metric-header">
+              <BarChart3 className="metric-icon" />
+              <h3>Total Deliveries</h3>
+            </div>
+            <div className="metric-value">{metrics.totalDeliveries}</div>
+            <Card.Text className="metric-description">
+              Last 30 days
+            </Card.Text>
+          </Card.Body>
+        </Card>
+      </div>
+
+      <div className="report-section">
+        <h3>Delivery History</h3>
+        <div className="table-container">
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Route</th>
+                <th>Distance</th>
+                <th>Delivery Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {deliveries.map((delivery, index) => (
+                <tr key={index}>
+                  <td>{delivery.date}</td>
+                  <td>{delivery.route}</td>
+                  <td>{delivery.distance} km</td>
+                  <td>{delivery.deliveryTime}</td>
+                  <td>
+                    <span className={`status-pill status-${delivery.status.toLowerCase()}`}>
+                      {delivery.status === "OnTime" ? (
+                        <>
+                          <CheckCircle2 size={14} />
+                          On Time
+                        </>
+                      ) : (
+                        <>
+                          <AlertTriangle size={14} />
+                          Delayed
+                        </>
+                      )}
+                    </span>
+                  </td>
+                </tr>
               ))}
+            </tbody>
+          </Table>
+        </div>
+      </div>
+
+      <div className="report-section">
+        <h3>Fuel Efficiency Trends</h3>
+        <Card className="chart-card">
+          <Card.Body>
+            <div className="chart-placeholder">
+              {/* Placeholder for fuel efficiency chart */}
+              <div className="bar-chart">
+                {fuelEfficiency.map((item, index) => (
+                  <div key={index} className="chart-bar-container">
+                    <div 
+                      className="chart-bar" 
+                      style={{ height: `${item.efficiency * 5}px` }}
+                      title={`${item.week}: ${item.efficiency} km/L`}
+                    ></div>
+                    <div className="chart-label">{item.week}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          </Card.Body>
+        </Card>
+      </div>
+
+      <div className="report-section">
+        <h3>Safety Incidents</h3>
+        <div className="incident-cards">
+          {incidents.length > 0 ? (
+            incidents.map((incident, index) => (
+              <Card key={index} className="incident-card">
+                <Card.Body>
+                  <Card.Title className="incident-title">
+                    {incident.type}
+                  </Card.Title>
+                  <Card.Text>
+                    <strong>Date:</strong> {incident.date}<br />
+                    <strong>Location:</strong> {incident.location}<br />
+                    <strong>Description:</strong> {incident.description}
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            ))
+          ) : (
+            <Card className="empty-state">
+              <Card.Body className="text-center">
+                <CheckCircle2 size={48} className="mb-2 text-success" />
+                <Card.Title>No Safety Incidents</Card.Title>
+                <Card.Text>
+                  Great job! No safety incidents have been reported for this driver.
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );

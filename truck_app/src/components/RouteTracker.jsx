@@ -1,5 +1,6 @@
 // truck_app/src/components/RouteTracker.jsx - Enhanced with real positions
 import React from 'react';
+import '../styles/Dashboard.css'
 
 function RouteTracker({ trucks = [] }) {
   // For now, we'll show the truck positions in a simple way

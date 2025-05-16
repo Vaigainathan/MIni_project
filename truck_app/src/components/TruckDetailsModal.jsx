@@ -1,6 +1,6 @@
-// truck_app/src/components/TruckDetailsModal.jsx - Enhanced with real-time data
 import React from 'react';
 import { Modal, Button, ProgressBar } from 'react-bootstrap';
+import '../styles/Dashboard.css';
 
 function TruckDetailsModal({ show, onClose, truck }) {
   if (!truck) return null;
@@ -49,7 +49,12 @@ function TruckDetailsModal({ show, onClose, truck }) {
               />
             </div>
             <p><strong>Speed:</strong> {truck.speed}</p>
-            <p><strong>Status:</strong> <span className={`status-badge status-${truck.status.toLowerCase().replace(' ', '-')}`}>{truck.status}</span></p>
+            <p>
+              <strong>Status:</strong> 
+              <span className={`status-badge status-${truck.status.toLowerCase().replace(' ', '-')}`}>
+                {truck.status}
+              </span>
+            </p>
           </div>
           
           <div className="col-md-6">

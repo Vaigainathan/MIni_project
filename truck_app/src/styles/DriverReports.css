@@ -14,6 +14,7 @@
 
 .driver-reports-container {
   padding: 20px;
+  top: 100px;
   background-color: var(--light-bg);
   min-height: 100vh;
   max-width: 1400px;
@@ -933,4 +934,156 @@
   .driver-profile-section {
     padding: 20px;
   }
+}
+
+.driver-reports-container {
+  padding: 20px;
+}
+
+.report-header {
+  margin-bottom: 24px;
+}
+
+.report-header h2 {
+  margin-bottom: 8px;
+}
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metric-card {
+  height: 100%;
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.metric-icon {
+  color: var(--primary-color, #1a237e);
+}
+
+.metric-header h3 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.metric-value {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.report-section {
+  margin-bottom: 32px;
+}
+
+.report-section h3 {
+  margin-bottom: 16px;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+}
+
+.status-ontime {
+  background-color: rgba(25, 135, 84, 0.1);
+  color: #198754;
+}
+
+.status-delayed {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.chart-card {
+  height: 300px;
+}
+
+.chart-placeholder {
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+}
+
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  height: 200px;
+  width: 100%;
+  gap: 16px;
+  padding: 0 20px;
+}
+
+.chart-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.chart-bar {
+  width: 30px;
+  background-color: var(--primary-color, #1a237e);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s ease;
+}
+
+.chart-label {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.incident-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.incident-title {
+  font-weight: bold;
+  color: #dc3545;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+}
+
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  color: #6c757d;
+  gap: 16px;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
