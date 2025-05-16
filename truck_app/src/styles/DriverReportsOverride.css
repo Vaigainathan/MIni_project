@@ -1,0 +1,286 @@
+/* truck_app/src/styles/DriverReportsOverride.css */
+
+/* Force our styling to take precedence */
+#root .driver-reports-container {
+  padding: 20px !important;
+  background-color: var(--light-bg) !important;
+  min-height: 100vh !important;
+  font-family: "Playfair Display", serif !important;
+}
+
+/* Driver card specific styling - overriding truck-card styles */
+#root .driver-card {
+  background: white !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  padding: 20px !important;
+  margin-bottom: 15px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  border: 1px solid #e0e0e0 !important;
+  display: block !important; /* Override flex display */
+  flex-direction: initial !important;
+  text-align: left !important;
+  transform: none !important;
+}
+
+#root .driver-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+  border-color: var(--accent-color) !important;
+}
+
+/* Reset icon styles that are conflicting */
+#root .driver-card .driver-icon {
+  font-size: 24px !important;
+  color: #555 !important;
+  width: 40px !important;
+  height: 40px !important;
+  margin-right: 12px !important;
+  margin-bottom: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Override driver card structure */
+#root .driver-card-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  margin-bottom: 15px !important;
+}
+
+#root .driver-info {
+  display: flex !important;
+  align-items: center !important;
+}
+
+#root .profile-badge {
+  padding: 6px 12px !important;
+  border-radius: 20px !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  display: inline-block !important;
+}
+
+#root .profile-good {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+}
+
+#root .profile-average {
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+}
+
+#root .profile-bad {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+}
+
+/* Override button styles */
+#root .btn-view-report {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  padding: 10px 15px !important;
+  background-color: #f0f2fa !important;
+  color: var(--primary-color, #1a237e) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s !important;
+  text-align: center !important;
+}
+
+#root .btn-view-report:hover {
+  background-color: #e1e4f3 !important;
+}
+
+#root .btn-view-report svg {
+  margin-right: 8px !important;
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* Fix font styles */
+#root .driver-name {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  margin: 0 0 4px 0 !important;
+}
+
+#root .driver-id {
+  font-size: 0.875rem !important;
+  color: #666 !important;
+  margin: 0 !important;
+}
+
+/* Stats row styling */
+#root .driver-stats {
+  margin-bottom: 15px !important;
+}
+
+#root .stat-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  margin-bottom: 8px !important;
+  font-size: 0.875rem !important;
+}
+
+#root .stat-label {
+  color: #666 !important;
+}
+
+#root .stat-value {
+  font-weight: 600 !important;
+  color: #333 !important;
+}
+
+/* Driver report component */
+#root .driver-report {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+}
+
+#root .report-header-card {
+  background: white !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  padding: 24px !important;
+  margin-bottom: 24px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+#root .driver-avatar-icon {
+  width: 50px !important;
+  height: 50px !important;
+  color: #555 !important;
+  margin-right: 16px !important;
+}
+
+#root .performance-score {
+  width: 100px !important;
+  height: 100px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  border: 4px solid #e0e0e0 !important;
+  background-color: white !important;
+  position: relative !important;
+}
+
+#root .score-value {
+  font-size: 2.5rem !important;
+  font-weight: bold !important;
+  line-height: 1 !important;
+}
+
+#root .score-excellent {
+  color: #28a745 !important;
+}
+
+#root .score-good {
+  color: #ffc107 !important;
+}
+
+#root .score-poor {
+  color: #dc3545 !important;
+}
+
+#root .score-label {
+  font-size: 0.75rem !important;
+  color: #666 !important;
+  margin-top: 4px !important;
+}
+
+/* Fix the grid layout */
+#root .driver-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+  gap: 20px !important;
+}
+
+#root .metrics-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 20px !important;
+  margin-bottom: 24px !important;
+}
+
+#root .stats-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 16px !important;
+  margin-bottom: 24px !important;
+}
+
+/* Adjust filter button */
+#root .btn-filter {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px 16px !important;
+  background-color: var(--primary-color, #1a237e) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+}
+
+#root .btn-filter svg {
+  margin-right: 8px !important;
+}
+
+/* Page title and section headings */
+#root .page-title {
+  font-size: 2.25rem !important;
+  color: var(--primary-color, #1a237e) !important;
+  margin-bottom: 10px !important;
+  font-weight: 600 !important;
+}
+
+#root .page-description {
+  color: #666 !important;
+  margin-bottom: 30px !important;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+  #root .metrics-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  #root .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  #root .report-header-card {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  
+  #root .driver-profile {
+    margin-bottom: 20px !important;
+  }
+  
+  #root .driver-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Force immediate children of driver-grid to be properly styled */
+#root .driver-grid > div {
+  display: block !important;
+}

@@ -1,12 +1,9 @@
+// truck_app/src/pages/Reports.jsx
 import React from 'react';
+import DriverReports from './DriverReports';
 
 function Reports() {
-  return (
-    <div>
-      <h2>Reports & Analytics</h2>
-      <p>This page will contain detailed reporting and analytics functionality.</p>
-    </div>
-  );
+  return <DriverReports />;
 }
 
 export default Reports;
