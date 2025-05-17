@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/Login.css';
@@ -9,12 +9,22 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      const redirectPath = user.role === 'driver' ? '/trucks' : '/dashboard';
+      navigate(redirectPath, { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    
+    console.log('Login attempt with username:', username, 'and password:', password);
     
     try {
       const res = await fetch('http://localhost:5000/api/auth/login', {
@@ -23,24 +33,48 @@ function LoginPage() {
         body: JSON.stringify({ username, password })
       });
 
-      if (!res.ok) {
-        throw new Error(res.status === 401 ? 'Invalid username or password' : 'Login failed');
+      console.log('Response status:', res.status);
+      
+      // Always try to parse JSON response, even for errors
+      let data;
+      try {
+        data = await res.json();
+        console.log('Response data:', data);
+      } catch (err) {
+        console.error('Failed to parse JSON response:', err);
+        throw new Error('Invalid server response');
       }
       
-      const data = await res.json();
-      // Important: This stores both the token and the role in the context
-      await login(data.token);
+      if (!res.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
       
-      // Navigate based on role directly from the API response
+      // Store token and get role
+      await login(data.token);
+      console.log('Login successful with role:', data.role);
+      
+      // Navigate based on role
       if (data.role === 'driver') {
         navigate('/trucks');
       } else {
         navigate('/dashboard');
       }
     } catch (err) {
-      setError(err.message);
+      console.error('Login error:', err);
+      setError(err.message || 'Login failed');
     } finally {
       setLoading(false);
+    }
+  };
+  
+  // Quick login buttons (for testing)
+  const fillCredentials = (userType) => {
+    if (userType === 'admin') {
+      setUsername('admin');
+      setPassword('admin123');
+    } else if (userType === 'driver') {
+      setUsername('driver1');
+      setPassword('driver123');
     }
   };
 
@@ -96,6 +130,8 @@ function LoginPage() {
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
+
+          
         </form>
       </div>
     </div>

@@ -24,3 +24,22 @@ export const getUserRole = () => {
     return null;
   }
 };
+
+// Add authenticated fetch utility
+export const authFetch = async (url, options = {}) => {
+  const token = getToken();
+  
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  return fetch(url, {
+    ...options,
+    headers
+  });
+};

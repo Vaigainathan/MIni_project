@@ -3,6 +3,7 @@ const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
+const authRouter = require('./auth');
 
 const app = express();
 const server = http.createServer(app);
@@ -15,6 +16,7 @@ const io = socketIO(server, {
 
 app.use(cors());
 app.use(express.json());
+app.use('/api/auth', authRouter);
 
 // Truck fleet data
 const TRUCKS = [
@@ -371,7 +373,3 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-
-const authRoutes = require('./auth');
-app.use('/api/auth', authRoutes);
