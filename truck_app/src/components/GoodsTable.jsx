@@ -1,4 +1,3 @@
-// truck_app/src/components/GoodsTable.jsx - Enhanced with more details
 import React from 'react';
 import '../styles/Dashboard.css';
 
@@ -15,9 +14,11 @@ function GoodsTable({ goods }) {
           <th>Description</th>
           <th>Quantity</th>
           <th>Weight</th>
+          <th>Origin</th>
           <th>Destination</th>
           <th>Status</th>
           <th>Value</th>
+          <th>Estimated Delivery</th>
         </tr>
       </thead>
       <tbody>
@@ -27,13 +28,15 @@ function GoodsTable({ goods }) {
             <td>{item.description}</td>
             <td>{item.quantity}</td>
             <td>{item.weight}</td>
+            <td>{item.origin}</td>
             <td>{item.destination}</td>
             <td>
-              <span className={`status-badge status-${(item.status || '').toLowerCase()}`}>
+              <span className={`status-badge status-${(item.status || '').toLowerCase().replace(' ', '-')}`}>
                 {item.status}
               </span>
             </td>
             <td>{item.value}</td>
+            <td>{item.estimatedDelivery}</td>
           </tr>
         ))}
       </tbody>
