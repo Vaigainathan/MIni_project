@@ -12,56 +12,153 @@ import {
 } from "lucide-react";
 import "../styles/DriverReports.css";
 
-// Mock historical driver data - In real app, this would come from API/database
-const generateHistoricalData = (driverId) => {
-  const baseMetrics = {
-    1: { avgFuel: 8.5, avgSpeed: 55, avgDeliveryTime: 48 },
-    2: { avgFuel: 9.2, avgSpeed: 62, avgDeliveryTime: 44 },
-    3: { avgFuel: 7.8, avgSpeed: 58, avgDeliveryTime: 52 },
-    4: { avgFuel: 8.0, avgSpeed: 65, avgDeliveryTime: 46 },
-    5: { avgFuel: 8.8, avgSpeed: 54, avgDeliveryTime: 50 },
-    0: { avgFuel: 10.8, avgSpeed: 50.3, avgDeliveryTime: 54.3 } // Bad driver example
-  };
-  
-  const base = baseMetrics[driverId] || baseMetrics[1];
-  
-  return {
-    avgFuelConsumption: base.avgFuel,
-    avgSpeed: base.avgSpeed,
-    avgDeliveryTime: base.avgDeliveryTime,
-    totalDeliveries: driverId === 0 ? 135 : Math.floor(Math.random() * 50) + 100,
-    totalDistance: driverId === 0 ? 43000 : Math.floor(Math.random() * 10000) + 50000,
-    incidents: driverId === 0 ? 8 : Math.floor(Math.random() * 5),
-    lateDeliveries: driverId === 0 ? 25 : Math.floor(Math.random() * 10) + 5,
-    idleTime: driverId === 0 ? 18 : Math.random() * 15 + 5, // percentage
-    harshBraking: driverId === 0 ? 32 : Math.floor(Math.random() * 20) + 10,
-    rapidAcceleration: driverId === 0 ? 28 : Math.floor(Math.random() * 15) + 5,
-    speedingIncidents: driverId === 0 ? 35 : Math.floor(Math.random() * 25) + 10
-  };
-};
-
-// Industry benchmarks
-const BENCHMARKS = {
-  fuelConsumption: { excellent: 7.5, good: 8.5, poor: 10 },
-  avgSpeed: { excellent: 60, good: 55, poor: 50 },
-  deliveryTime: { excellent: 42, good: 48, poor: 54 },
-  idleTime: { excellent: 5, good: 10, poor: 15 },
-  lateDeliveryRate: { excellent: 5, good: 10, poor: 15 }
-};
-
 const DriverReportComponent = ({ driverId }) => {
-  const [performanceData, setPerformanceData] = useState(null);
+  const [driverData, setDriverData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Simulate API call to get driver data
-    setIsLoading(true);
-    setTimeout(() => {
-      const data = generateHistoricalData(driverId);
-      setPerformanceData(data);
-      setIsLoading(false);
-    }, 1000);
+    // Fetch driver metrics from API
+    const fetchDriverData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`http://localhost:5000/api/drivers/${driverId}/metrics`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch driver data: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log("Fetched driver data:", data);
+        
+        // Process the data to match the expected format for display
+        const processedData = {
+          metrics: {
+            onTimePercentage: Math.round(100 - (data.metrics.lateDeliveries / data.metrics.totalDeliveries) * 100),
+            onTimeChange: Math.round(Math.random() * 10 - 5), // Random change for demonstration
+            fuelEfficiency: data.metrics.avgFuelConsumption.toFixed(1),
+            fuelEfficiencyChange: Math.round(Math.random() * 10 - 5), // Random change for demonstration
+            performanceScore: calculatePerformanceScore(data.metrics),
+            totalDeliveries: data.metrics.totalDeliveries
+          },
+          deliveries: generateDeliveryHistory(data.metrics.totalDeliveries, data.metrics.lateDeliveries),
+          fuelEfficiency: generateFuelEfficiencyTrend(data.metrics.avgFuelConsumption),
+          incidents: generateIncidents(data.metrics.incidents)
+        };
+        
+        setDriverData(processedData);
+      } catch (error) {
+        console.error("Error fetching driver data:", error);
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDriverData();
   }, [driverId]);
+
+  // Calculate an overall performance score based on various metrics
+  const calculatePerformanceScore = (metrics) => {
+    // Base score out of 100
+    let score = 75; // Start with average score
+    
+    // Add/subtract based on metrics
+    if (metrics.avgFuelConsumption < 8.0) score += 5;
+    if (metrics.avgFuelConsumption > 9.0) score -= 5;
+    
+    if (metrics.avgSpeed > 55 && metrics.avgSpeed < 65) score += 5;
+    if (metrics.avgSpeed > 80) score -= 10;
+    
+    if (metrics.idleTime < 8) score += 5;
+    if (metrics.idleTime > 12) score -= 5;
+    
+    // Incidents have major negative impact
+    score -= metrics.incidents * 3;
+    score -= (metrics.harshBraking / 10);
+    score -= (metrics.rapidAcceleration / 10);
+    score -= (metrics.speedingIncidents / 10);
+    
+    // Cap between 0-100
+    return Math.max(0, Math.min(100, Math.round(score)));
+  };
+
+  // Generate sample delivery history based on total deliveries and late deliveries
+  const generateDeliveryHistory = (total, late) => {
+    const deliveries = [];
+    const today = new Date();
+    const routes = [
+      "Delhi → Mumbai",
+      "Mumbai → Bangalore",
+      "Bangalore → Chennai",
+      "Chennai → Kolkata",
+      "Kolkata → Delhi",
+      "Pune → Hyderabad"
+    ];
+    
+    // Generate last 5 deliveries
+    for (let i = 0; i < 5; i++) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - (i * 3 + Math.floor(Math.random() * 3)));
+      
+      const isLate = i < late && Math.random() > 0.6;
+      
+      deliveries.push({
+        date: date.toLocaleDateString("en-IN"),
+        route: routes[Math.floor(Math.random() * routes.length)],
+        distance: Math.floor(Math.random() * 800) + 200 + " km",
+        deliveryTime: Math.floor(Math.random() * 24) + 24 + " hours",
+        status: isLate ? "Delayed" : "OnTime"
+      });
+    }
+    
+    return deliveries;
+  };
+
+  // Generate fuel efficiency trend data
+  const generateFuelEfficiencyTrend = (avgEfficiency) => {
+    const weeks = ["Week 1", "Week 2", "Week 3", "Week 4"];
+    return weeks.map(week => ({
+      week,
+      efficiency: avgEfficiency * (0.9 + Math.random() * 0.2) // Variations around the average
+    }));
+  };
+
+  // Generate safety incidents based on incident count
+  const generateIncidents = (count) => {
+    if (count <= 0) return [];
+    
+    const incidents = [];
+    const today = new Date();
+    const incidentTypes = [
+      "Harsh Braking Incident",
+      "Speed Limit Violation",
+      "Rapid Acceleration",
+      "Idle Time Violation",
+      "Route Deviation"
+    ];
+    const locations = [
+      "Mumbai-Pune Expressway",
+      "NH8, Gujarat",
+      "Chennai Outer Ring Road",
+      "Bangalore Electronic City",
+      "Delhi-Jaipur Highway"
+    ];
+    
+    for (let i = 0; i < Math.min(count, 3); i++) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - Math.floor(Math.random() * 30));
+      
+      incidents.push({
+        type: incidentTypes[Math.floor(Math.random() * incidentTypes.length)],
+        date: date.toLocaleDateString("en-IN"),
+        location: locations[Math.floor(Math.random() * locations.length)],
+        description: "Driver exhibited unsafe driving behavior that triggered vehicle safety systems."
+      });
+    }
+    
+    return incidents;
+  };
 
   if (isLoading) {
     return (
@@ -72,7 +169,16 @@ const DriverReportComponent = ({ driverId }) => {
     );
   }
 
-  if (!performanceData) {
+  if (error) {
+    return (
+      <div className="error-container">
+        <AlertTriangle />
+        <p>Error loading driver data: {error}</p>
+      </div>
+    );
+  }
+
+  if (!driverData) {
     return (
       <div className="error-container">
         <AlertTriangle />
@@ -80,8 +186,6 @@ const DriverReportComponent = ({ driverId }) => {
       </div>
     );
   }
-
-  const { metrics, deliveries, fuelEfficiency, incidents } = performanceData;
 
   return (
     <div className="driver-reports-container">
@@ -97,9 +201,9 @@ const DriverReportComponent = ({ driverId }) => {
               <Clock className="metric-icon" />
               <h3>On-Time Deliveries</h3>
             </div>
-            <div className="metric-value">{metrics.onTimePercentage}%</div>
+            <div className="metric-value">{driverData.metrics.onTimePercentage}%</div>
             <Card.Text className="metric-description">
-              {metrics.onTimeChange > 0 ? "+" : ""}{metrics.onTimeChange}% from last month
+              {driverData.metrics.onTimeChange > 0 ? "+" : ""}{driverData.metrics.onTimeChange}% from last month
             </Card.Text>
           </Card.Body>
         </Card>
@@ -110,9 +214,9 @@ const DriverReportComponent = ({ driverId }) => {
               <Fuel className="metric-icon" />
               <h3>Fuel Efficiency</h3>
             </div>
-            <div className="metric-value">{metrics.fuelEfficiency} km/L</div>
+            <div className="metric-value">{driverData.metrics.fuelEfficiency} km/L</div>
             <Card.Text className="metric-description">
-              {metrics.fuelEfficiencyChange > 0 ? "+" : ""}{metrics.fuelEfficiencyChange}% from last month
+              {driverData.metrics.fuelEfficiencyChange > 0 ? "+" : ""}{driverData.metrics.fuelEfficiencyChange}% from last month
             </Card.Text>
           </Card.Body>
         </Card>
@@ -123,7 +227,7 @@ const DriverReportComponent = ({ driverId }) => {
               <Target className="metric-icon" />
               <h3>Performance Score</h3>
             </div>
-            <div className="metric-value">{metrics.performanceScore}/100</div>
+            <div className="metric-value">{driverData.metrics.performanceScore}/100</div>
             <Card.Text className="metric-description">
               Based on multiple factors
             </Card.Text>
@@ -136,7 +240,7 @@ const DriverReportComponent = ({ driverId }) => {
               <BarChart3 className="metric-icon" />
               <h3>Total Deliveries</h3>
             </div>
-            <div className="metric-value">{metrics.totalDeliveries}</div>
+            <div className="metric-value">{driverData.metrics.totalDeliveries}</div>
             <Card.Text className="metric-description">
               Last 30 days
             </Card.Text>
@@ -158,11 +262,11 @@ const DriverReportComponent = ({ driverId }) => {
               </tr>
             </thead>
             <tbody>
-              {deliveries.map((delivery, index) => (
+              {driverData.deliveries.map((delivery, index) => (
                 <tr key={index}>
                   <td>{delivery.date}</td>
                   <td>{delivery.route}</td>
-                  <td>{delivery.distance} km</td>
+                  <td>{delivery.distance}</td>
                   <td>{delivery.deliveryTime}</td>
                   <td>
                     <span className={`status-pill status-${delivery.status.toLowerCase()}`}>
@@ -193,12 +297,12 @@ const DriverReportComponent = ({ driverId }) => {
             <div className="chart-placeholder">
               {/* Placeholder for fuel efficiency chart */}
               <div className="bar-chart">
-                {fuelEfficiency.map((item, index) => (
+                {driverData.fuelEfficiency.map((item, index) => (
                   <div key={index} className="chart-bar-container">
                     <div 
                       className="chart-bar" 
                       style={{ height: `${item.efficiency * 5}px` }}
-                      title={`${item.week}: ${item.efficiency} km/L`}
+                      title={`${item.week}: ${item.efficiency.toFixed(1)} km/L`}
                     ></div>
                     <div className="chart-label">{item.week}</div>
                   </div>
@@ -212,8 +316,8 @@ const DriverReportComponent = ({ driverId }) => {
       <div className="report-section">
         <h3>Safety Incidents</h3>
         <div className="incident-cards">
-          {incidents.length > 0 ? (
-            incidents.map((incident, index) => (
+          {driverData.incidents.length > 0 ? (
+            driverData.incidents.map((incident, index) => (
               <Card key={index} className="incident-card">
                 <Card.Body>
                   <Card.Title className="incident-title">

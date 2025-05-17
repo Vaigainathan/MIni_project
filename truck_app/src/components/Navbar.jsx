@@ -31,6 +31,7 @@ function Navbar() {
         {/* Navigation Links */}
         <div className={`navbar-collapse ${isExpanded ? 'show' : ''}`}>
           <ul className="navbar-nav">
+            {/* Owner specific menu items */}
             {user?.role === 'owner' && (
               <>
                 <li className="nav-item">
@@ -48,20 +49,29 @@ function Navbar() {
                     Reports
                   </NavLink>
                 </li>
+                <li className="nav-item">
+                  <NavLink to="/trucks" className={({ isActive }) => (isActive ? 'active' : '')}>
+                    Trucks
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink to="/routes" className={({ isActive }) => (isActive ? 'active' : '')}>
+                    Routes
+                  </NavLink>
+                </li>
               </>
             )}
             
-            {/* Both owner & driver */}
-            <li className="nav-item">
-              <NavLink to="/trucks" className={({ isActive }) => (isActive ? 'active' : '')}>
-                Trucks
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink to="/routes" className={({ isActive }) => (isActive ? 'active' : '')}>
-                Routes
-              </NavLink>
-            </li>
+            {/* Driver specific menu items */}
+            {user?.role === 'driver' && (
+              <>
+                <li className="nav-item">
+                  <NavLink to="/driver-dashboard" className={({ isActive }) => (isActive ? 'active' : '')}>
+                    My Dashboard
+                  </NavLink>
+                </li>
+              </>
+            )}
           </ul>
           
           {/* User Info and Logout */}

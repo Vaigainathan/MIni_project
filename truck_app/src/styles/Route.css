@@ -1,0 +1,133 @@
+.route-table {
+  background-color: white;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+
+.route-table th {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 12px 15px;
+  font-weight: 600;
+}
+
+.route-table td {
+  padding: 12px 15px;
+  vertical-align: middle;
+}
+
+.route-table tr {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.route-table tr:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Progress bar with label */
+.progress-with-label {
+  position: relative;
+  width: 100%;
+  height: 20px;
+}
+
+.progress-with-label .progress {
+  height: 8px;
+  margin-top: 5px;
+}
+
+.progress-label {
+  position: absolute;
+  right: 0;
+  top: -15px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Badge styling */
+.badge {
+  padding: 6px 10px;
+  font-weight: normal;
+  font-size: 0.75rem;
+}
+
+/* Route details container */
+.route-details-container {
+  background-color: white;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 25px;
+}
+
+.route-details-container .card-header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 15px 20px;
+}
+
+.route-details-container .card-body {
+  padding: 20px;
+}
+
+.route-details-container h6 {
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-bottom: 15px;
+  font-size: 1.05rem;
+}
+
+.route-details-container p {
+  margin-bottom: 8px;
+}
+
+/* Map customization for routes */
+.map-section {
+  margin-bottom: 30px;
+}
+
+.map-legend .legend-item {
+  margin-right: 15px;
+}
+
+/* No results container */
+.no-results-container {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.no-results-container h5 {
+  margin: 15px 0 10px;
+  color: var(--text-dark);
+}
+
+.no-results-container p {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+/* Filter section responsive adjustments */
+@media (max-width: 768px) {
+  .d-flex.flex-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .d-flex.flex-wrap .form-control,
+  .d-flex.flex-wrap .form-select {
+    width: 100% !important;
+    margin-bottom: 10px;
+  }
+  
+  .route-table th:nth-child(7),
+  .route-table td:nth-child(7),
+  .route-table th:nth-child(9),
+  .route-table td:nth-child(9) {
+    display: none;
+  }
+}
