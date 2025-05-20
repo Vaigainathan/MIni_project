@@ -14,23 +14,32 @@
 
 .driver-reports-container {
   padding: 20px;
-  top: 100px;
+  padding-top: 80px; /* Add top padding to account for navbar height */
+  margin-top: var(--navbar-height); /* Add margin-top equal to navbar height */
   background-color: var(--light-bg);
-  min-height: 100vh;
+  min-height: calc(100vh - var(--navbar-height)); /* Adjust height calculation */
   max-width: 1400px;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative; /* Add position relative */
+  z-index: 1; /* Ensure proper stacking context */
 }
 
 /* Rest of your existing CSS stays the same */
 .header-section {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
+  max-width: 1200px;
+  margin: 0 auto 40px auto;
+  padding-top: 20px; /* Add padding to push content down */
 }
 
 .page-title {
-  font-size: 2rem;
-  color: var(--primary-color);
-  margin: 0 0 10px 0;
-  font-weight: 600;
+  font-size: 2.5rem;
+  color: #2d3748;
+  margin: 0 0 12px 0;
+  font-weight: 700;
+  line-height: 1.2;
+  padding-top: 10px; /* Additional padding for title */
 }
 
 .page-description {

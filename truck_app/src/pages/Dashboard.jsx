@@ -4,7 +4,7 @@ import TruckCard from '../components/TruckCard';
 import TruckMap from '../components/TruckMap';
 import GoodsTable from '../components/GoodsTable';
 import socketService from '../services/socketService';
-import '../styles/Dashboard.css';
+import '../styles/dashboard.css';
 
 function Dashboard() {
   const [trucks, setTrucks] = useState([]);

@@ -11,7 +11,7 @@ import DriverDashboard from './pages/DriverDashboard'; // Import the new DriverD
 import Navbar from './components/Navbar';
 import { useAuth } from './contexts/AuthContext';
 
-import './styles/Dashboard.css';
+import './styles/dashboard.css';
 
 function App() {
   const { user } = useAuth();
