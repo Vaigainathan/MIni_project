@@ -14,7 +14,7 @@
 
 .driver-reports-container {
   padding: 20px;
-  padding-top: 80px; /* Add top padding to account for navbar height */
+  padding-top: 80px; 
   margin-top: var(--navbar-height); /* Add margin-top equal to navbar height */
   background-color: var(--light-bg);
   min-height: calc(100vh - var(--navbar-height)); /* Adjust height calculation */
